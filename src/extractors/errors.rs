@@ -1,12 +1,12 @@
-use std::str;
-use std::fmt;
 use std::error::Error;
+use std::fmt;
+use std::str;
 
-use actix_web::{HttpResponse, ResponseError};
 use actix_web::http::StatusCode;
+use actix_web::{HttpResponse, ResponseError};
 
-use headers::www_authenticate::{WWWAuthenticate};
 use headers::www_authenticate::Challenge;
+use headers::www_authenticate::WWWAuthenticate;
 
 /// Authentication error returned by Auth extractor.
 ///
@@ -22,7 +22,7 @@ impl<C: Challenge> AuthenticationError<C> {
     pub fn new(challenge: C) -> AuthenticationError<C> {
         AuthenticationError {
             challenge,
-            status_code: StatusCode::UNAUTHORIZED,
+            status_code: StatusCode::FORBIDDEN,
         }
     }
 
@@ -57,7 +57,7 @@ impl<C: 'static + Challenge> ResponseError for AuthenticationError<C> {
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code)
             // TODO: Get rid of the `.clone()`
-            .set(WWWAuthenticate(self.challenge.clone()))
+            // .set(WWWAuthenticate(self.challenge.clone()))
             .finish()
     }
 }
